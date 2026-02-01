@@ -193,14 +193,6 @@ src/main/java/ru/mephi/ozerov/controlfinance/
 
 ## Модель данных
 
-```
-User ──────┬──── Wallet ────┬──── Transaction
-           │                │
-           └──── Category ──┼──── Budget
-                            │
-Transfer ──────────────────┘
-```
-
 - **User** — пользователь (login, passwordHash)
 - **Wallet** — кошелёк пользователя (balance)
 - **Category** — категория (INCOME/EXPENSE)
