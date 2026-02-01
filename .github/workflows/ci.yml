@@ -71,12 +71,9 @@ jobs:
           path: target/site/jacoco/
           retention-days: 14
 
-      - name: Проверка минимального покрытия
-        run: ./mvnw jacoco:check -q -DskipSpotlessCheck=true
+      - name: Проверка минимального покрытия и сборка JAR
+        run: ./mvnw verify -DskipTests -q -DskipSpotlessCheck=true
         continue-on-error: true
-
-      - name: Сборка JAR
-        run: ./mvnw package -DskipTests -q -DskipSpotlessCheck=true
 
       - name: Загрузка артефакта сборки
         uses: actions/upload-artifact@v4
