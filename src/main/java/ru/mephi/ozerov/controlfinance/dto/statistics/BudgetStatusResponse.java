@@ -1,15 +1,12 @@
 package ru.mephi.ozerov.controlfinance.dto.statistics;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
-/**
- * DTO for budget status response.
- */
+/** DTO for budget status response. */
 @Data
 @Builder
 @NoArgsConstructor

@@ -1,5 +1,10 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,29 +26,18 @@ import ru.mephi.ozerov.controlfinance.repository.UserRepository;
 import ru.mephi.ozerov.controlfinance.repository.WalletRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.UserServiceImpl;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
 
-    @Mock
-    private WalletRepository walletRepository;
+    @Mock private WalletRepository walletRepository;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
+    @Mock private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private AuthenticationManager authenticationManager;
+    @Mock private AuthenticationManager authenticationManager;
 
-    @InjectMocks
-    private UserServiceImpl userService;
+    @InjectMocks private UserServiceImpl userService;
 
     private RegisterRequest registerRequest;
     private LoginRequest loginRequest;
@@ -51,21 +45,12 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        registerRequest = RegisterRequest.builder()
-                .login("testuser")
-                .password("password123")
-                .build();
+        registerRequest =
+                RegisterRequest.builder().login("testuser").password("password123").build();
 
-        loginRequest = LoginRequest.builder()
-                .login("testuser")
-                .password("password123")
-                .build();
+        loginRequest = LoginRequest.builder().login("testuser").password("password123").build();
 
-        user = User.builder()
-                .id(1L)
-                .login("testuser")
-                .passwordHash("hashedPassword")
-                .build();
+        user = User.builder().id(1L).login("testuser").passwordHash("hashedPassword").build();
     }
 
     @Test
@@ -88,7 +73,8 @@ class UserServiceTest {
     void register_ShouldThrowExceptionWhenUserExists() {
         when(userRepository.existsByLogin("testuser")).thenReturn(true);
 
-        assertThrows(EntityAlreadyExistsException.class, () -> userService.register(registerRequest));
+        assertThrows(
+                EntityAlreadyExistsException.class, () -> userService.register(registerRequest));
         verify(userRepository, never()).save(any());
     }
 
@@ -127,6 +113,7 @@ class UserServiceTest {
     void getUserByLogin_ShouldThrowExceptionWhenNotFound() {
         when(userRepository.findByLogin("nonexistent")).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> userService.getUserByLogin("nonexistent"));
+        assertThrows(
+                EntityNotFoundException.class, () -> userService.getUserByLogin("nonexistent"));
     }
 }

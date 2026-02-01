@@ -9,9 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.mephi.ozerov.controlfinance.entity.CategoryType;
 
-/**
- * DTO for category creation request.
- */
+/** DTO for category creation request. */
 @Data
 @Builder
 @NoArgsConstructor
@@ -22,6 +20,5 @@ public class CategoryRequest {
     @Size(min = 1, max = 100, message = "Category name must be between 1 and 100 characters")
     private String name;
 
-    @NotNull(message = "Category type is required")
-    private CategoryType type;
+    @NotNull(message = "Category type is required") private CategoryType type;
 }

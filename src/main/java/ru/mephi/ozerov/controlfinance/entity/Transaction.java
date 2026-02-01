@@ -1,23 +1,23 @@
 package ru.mephi.ozerov.controlfinance.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.*;
 
 /**
- * Сущность, представляющая финансовую транзакцию (доход или расход).
- * Транзакции связаны с кошельком и опционально с категорией и переводом.
+ * Сущность, представляющая финансовую транзакцию (доход или расход). Транзакции связаны с кошельком
+ * и опционально с категорией и переводом.
  */
 @Entity
-@Table(name = "transactions",
+@Table(
+        name = "transactions",
         indexes = {
-                @Index(name = "idx_transaction_wallet", columnList = "wallet_id"),
-                @Index(name = "idx_transaction_category", columnList = "category_id"),
-                @Index(name = "idx_transaction_created_at", columnList = "created_at"),
-                @Index(name = "idx_transaction_type", columnList = "type"),
-                @Index(name = "idx_transaction_transfer", columnList = "transfer_id")
+            @Index(name = "idx_transaction_wallet", columnList = "wallet_id"),
+            @Index(name = "idx_transaction_category", columnList = "category_id"),
+            @Index(name = "idx_transaction_created_at", columnList = "created_at"),
+            @Index(name = "idx_transaction_type", columnList = "type"),
+            @Index(name = "idx_transaction_transfer", columnList = "transfer_id")
         })
 @Getter
 @Setter

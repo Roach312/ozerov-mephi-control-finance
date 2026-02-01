@@ -1,16 +1,13 @@
 package ru.mephi.ozerov.controlfinance.exception;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-/**
- * Стандартный DTO ответа об ошибке.
- */
+/** Стандартный DTO ответа об ошибке. */
 @Data
 @Builder
 @NoArgsConstructor

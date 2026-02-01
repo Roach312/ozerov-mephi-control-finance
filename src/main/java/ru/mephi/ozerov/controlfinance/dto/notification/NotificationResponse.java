@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for notification/alert response.
- */
+/** DTO for notification/alert response. */
 @Data
 @Builder
 @NoArgsConstructor

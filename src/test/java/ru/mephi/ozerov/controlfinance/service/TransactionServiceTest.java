@@ -1,5 +1,12 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,31 +21,18 @@ import ru.mephi.ozerov.controlfinance.repository.TransactionRepository;
 import ru.mephi.ozerov.controlfinance.repository.WalletRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.TransactionServiceImpl;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class TransactionServiceTest {
 
-    @Mock
-    private TransactionRepository transactionRepository;
+    @Mock private TransactionRepository transactionRepository;
 
-    @Mock
-    private WalletRepository walletRepository;
+    @Mock private WalletRepository walletRepository;
 
-    @Mock
-    private WalletService walletService;
+    @Mock private WalletService walletService;
 
-    @Mock
-    private CategoryService categoryService;
+    @Mock private CategoryService categoryService;
 
-    @InjectMocks
-    private TransactionServiceImpl transactionService;
+    @InjectMocks private TransactionServiceImpl transactionService;
 
     private User user;
     private Wallet wallet;
@@ -50,45 +44,45 @@ class TransactionServiceTest {
     void setUp() {
         user = User.builder().id(1L).login("testuser").build();
 
-        wallet = Wallet.builder()
-                .id(1L)
-                .user(user)
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        wallet = Wallet.builder().id(1L).user(user).balance(new BigDecimal("1000.00")).build();
 
-        expenseCategory = Category.builder()
-                .id(1L)
-                .user(user)
-                .name("Food")
-                .type(CategoryType.EXPENSE)
-                .build();
+        expenseCategory =
+                Category.builder()
+                        .id(1L)
+                        .user(user)
+                        .name("Food")
+                        .type(CategoryType.EXPENSE)
+                        .build();
 
-        incomeCategory = Category.builder()
-                .id(2L)
-                .user(user)
-                .name("Salary")
-                .type(CategoryType.INCOME)
-                .build();
+        incomeCategory =
+                Category.builder()
+                        .id(2L)
+                        .user(user)
+                        .name("Salary")
+                        .type(CategoryType.INCOME)
+                        .build();
 
-        transaction = Transaction.builder()
-                .id(1L)
-                .wallet(wallet)
-                .amount(new BigDecimal("100.00"))
-                .type(TransactionType.EXPENSE)
-                .category(expenseCategory)
-                .description("Lunch")
-                .createdAt(LocalDateTime.now())
-                .build();
+        transaction =
+                Transaction.builder()
+                        .id(1L)
+                        .wallet(wallet)
+                        .amount(new BigDecimal("100.00"))
+                        .type(TransactionType.EXPENSE)
+                        .category(expenseCategory)
+                        .description("Lunch")
+                        .createdAt(LocalDateTime.now())
+                        .build();
     }
 
     @Test
     void createTransaction_ShouldCreateExpenseTransaction() {
-        TransactionRequest request = TransactionRequest.builder()
-                .amount(new BigDecimal("100.00"))
-                .type(TransactionType.EXPENSE)
-                .categoryId(1L)
-                .description("Lunch")
-                .build();
+        TransactionRequest request =
+                TransactionRequest.builder()
+                        .amount(new BigDecimal("100.00"))
+                        .type(TransactionType.EXPENSE)
+                        .categoryId(1L)
+                        .description("Lunch")
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(categoryService.getCategoryById(1L)).thenReturn(expenseCategory);
@@ -107,21 +101,23 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_ShouldCreateIncomeTransaction() {
-        TransactionRequest request = TransactionRequest.builder()
-                .amount(new BigDecimal("500.00"))
-                .type(TransactionType.INCOME)
-                .categoryId(2L)
-                .description("Monthly salary")
-                .build();
+        TransactionRequest request =
+                TransactionRequest.builder()
+                        .amount(new BigDecimal("500.00"))
+                        .type(TransactionType.INCOME)
+                        .categoryId(2L)
+                        .description("Monthly salary")
+                        .build();
 
-        Transaction incomeTransaction = Transaction.builder()
-                .id(2L)
-                .wallet(wallet)
-                .amount(new BigDecimal("500.00"))
-                .type(TransactionType.INCOME)
-                .category(incomeCategory)
-                .createdAt(LocalDateTime.now())
-                .build();
+        Transaction incomeTransaction =
+                Transaction.builder()
+                        .id(2L)
+                        .wallet(wallet)
+                        .amount(new BigDecimal("500.00"))
+                        .type(TransactionType.INCOME)
+                        .category(incomeCategory)
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(categoryService.getCategoryById(2L)).thenReturn(incomeCategory);
@@ -137,23 +133,26 @@ class TransactionServiceTest {
 
     @Test
     void createTransaction_ShouldThrowExceptionForMismatchedTypes() {
-        TransactionRequest request = TransactionRequest.builder()
-                .amount(new BigDecimal("100.00"))
-                .type(TransactionType.INCOME)
-                .categoryId(1L)
-                .build();
+        TransactionRequest request =
+                TransactionRequest.builder()
+                        .amount(new BigDecimal("100.00"))
+                        .type(TransactionType.INCOME)
+                        .categoryId(1L)
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(categoryService.getCategoryById(1L)).thenReturn(expenseCategory);
 
-        assertThrows(ValidationException.class, () -> transactionService.createTransaction(request));
+        assertThrows(
+                ValidationException.class, () -> transactionService.createTransaction(request));
         verify(transactionRepository, never()).save(any());
     }
 
     @Test
     void getAllTransactions_ShouldReturnAllTransactions() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
-        when(transactionRepository.findByWalletOrderByCreatedAtDesc(wallet)).thenReturn(List.of(transaction));
+        when(transactionRepository.findByWalletOrderByCreatedAtDesc(wallet))
+                .thenReturn(List.of(transaction));
 
         List<TransactionResponse> responses = transactionService.getAllTransactions();
 
@@ -164,9 +163,11 @@ class TransactionServiceTest {
     @Test
     void getTransactionsByType_ShouldReturnFilteredTransactions() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
-        when(transactionRepository.findByWalletAndType(wallet, TransactionType.EXPENSE)).thenReturn(List.of(transaction));
+        when(transactionRepository.findByWalletAndType(wallet, TransactionType.EXPENSE))
+                .thenReturn(List.of(transaction));
 
-        List<TransactionResponse> responses = transactionService.getTransactionsByType(TransactionType.EXPENSE);
+        List<TransactionResponse> responses =
+                transactionService.getTransactionsByType(TransactionType.EXPENSE);
 
         assertNotNull(responses);
         assertEquals(1, responses.size());
@@ -177,7 +178,8 @@ class TransactionServiceTest {
     void getTransactionsByCategory_ShouldReturnFilteredTransactions() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(categoryService.getCategoryById(1L)).thenReturn(expenseCategory);
-        when(transactionRepository.findByWalletAndCategory(wallet, expenseCategory)).thenReturn(List.of(transaction));
+        when(transactionRepository.findByWalletAndCategory(wallet, expenseCategory))
+                .thenReturn(List.of(transaction));
 
         List<TransactionResponse> responses = transactionService.getTransactionsByCategory(1L);
 

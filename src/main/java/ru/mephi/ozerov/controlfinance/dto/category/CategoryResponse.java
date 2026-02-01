@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.mephi.ozerov.controlfinance.entity.CategoryType;
 
-/**
- * DTO for category response.
- */
+/** DTO for category response. */
 @Data
 @Builder
 @NoArgsConstructor

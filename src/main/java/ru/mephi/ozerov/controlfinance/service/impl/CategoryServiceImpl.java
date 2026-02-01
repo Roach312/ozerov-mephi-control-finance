@@ -1,5 +1,7 @@
 package ru.mephi.ozerov.controlfinance.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +16,7 @@ import ru.mephi.ozerov.controlfinance.repository.CategoryRepository;
 import ru.mephi.ozerov.controlfinance.service.CategoryService;
 import ru.mephi.ozerov.controlfinance.service.UserService;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Реализация сервиса категорий.
- */
+/** Реализация сервиса категорий. */
 @Service
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
@@ -32,16 +29,22 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse createCategory(CategoryRequest request) {
         User user = userService.getCurrentUser();
 
-        if (categoryRepository.existsByUserAndNameAndType(user, request.getName(), request.getType())) {
+        if (categoryRepository.existsByUserAndNameAndType(
+                user, request.getName(), request.getType())) {
             throw new EntityAlreadyExistsException(
-                    "Category '" + request.getName() + "' with type " + request.getType() + " already exists");
+                    "Category '"
+                            + request.getName()
+                            + "' with type "
+                            + request.getType()
+                            + " already exists");
         }
 
-        Category category = Category.builder()
-                .user(user)
-                .name(request.getName())
-                .type(request.getType())
-                .build();
+        Category category =
+                Category.builder()
+                        .user(user)
+                        .name(request.getName())
+                        .type(request.getType())
+                        .build();
 
         category = categoryRepository.save(category);
 
@@ -70,8 +73,12 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public Category getCategoryById(Long categoryId) {
         User user = userService.getCurrentUser();
-        return categoryRepository.findByIdAndUser(categoryId, user)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + categoryId));
+        return categoryRepository
+                .findByIdAndUser(categoryId, user)
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Category not found with id: " + categoryId));
     }
 
     private CategoryResponse mapToResponse(Category category) {

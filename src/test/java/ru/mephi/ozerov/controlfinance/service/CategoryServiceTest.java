@@ -1,5 +1,11 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,24 +22,14 @@ import ru.mephi.ozerov.controlfinance.exception.EntityNotFoundException;
 import ru.mephi.ozerov.controlfinance.repository.CategoryRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.CategoryServiceImpl;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
-    @Mock
-    private CategoryRepository categoryRepository;
+    @Mock private CategoryRepository categoryRepository;
 
-    @Mock
-    private UserService userService;
+    @Mock private UserService userService;
 
-    @InjectMocks
-    private CategoryServiceImpl categoryService;
+    @InjectMocks private CategoryServiceImpl categoryService;
 
     private User user;
     private Category category;
@@ -41,28 +37,24 @@ class CategoryServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = User.builder()
-                .id(1L)
-                .login("testuser")
-                .build();
+        user = User.builder().id(1L).login("testuser").build();
 
-        category = Category.builder()
-                .id(1L)
-                .user(user)
-                .name("Food")
-                .type(CategoryType.EXPENSE)
-                .build();
+        category =
+                Category.builder()
+                        .id(1L)
+                        .user(user)
+                        .name("Food")
+                        .type(CategoryType.EXPENSE)
+                        .build();
 
-        categoryRequest = CategoryRequest.builder()
-                .name("Food")
-                .type(CategoryType.EXPENSE)
-                .build();
+        categoryRequest = CategoryRequest.builder().name("Food").type(CategoryType.EXPENSE).build();
     }
 
     @Test
     void createCategory_ShouldCreateAndReturnCategory() {
         when(userService.getCurrentUser()).thenReturn(user);
-        when(categoryRepository.existsByUserAndNameAndType(user, "Food", CategoryType.EXPENSE)).thenReturn(false);
+        when(categoryRepository.existsByUserAndNameAndType(user, "Food", CategoryType.EXPENSE))
+                .thenReturn(false);
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
         CategoryResponse response = categoryService.createCategory(categoryRequest);
@@ -76,9 +68,12 @@ class CategoryServiceTest {
     @Test
     void createCategory_ShouldThrowExceptionWhenCategoryExists() {
         when(userService.getCurrentUser()).thenReturn(user);
-        when(categoryRepository.existsByUserAndNameAndType(user, "Food", CategoryType.EXPENSE)).thenReturn(true);
+        when(categoryRepository.existsByUserAndNameAndType(user, "Food", CategoryType.EXPENSE))
+                .thenReturn(true);
 
-        assertThrows(EntityAlreadyExistsException.class, () -> categoryService.createCategory(categoryRequest));
+        assertThrows(
+                EntityAlreadyExistsException.class,
+                () -> categoryService.createCategory(categoryRequest));
         verify(categoryRepository, never()).save(any());
     }
 
@@ -97,9 +92,11 @@ class CategoryServiceTest {
     @Test
     void getCategoriesByType_ShouldReturnFilteredCategories() {
         when(userService.getCurrentUser()).thenReturn(user);
-        when(categoryRepository.findByUserAndType(user, CategoryType.EXPENSE)).thenReturn(List.of(category));
+        when(categoryRepository.findByUserAndType(user, CategoryType.EXPENSE))
+                .thenReturn(List.of(category));
 
-        List<CategoryResponse> responses = categoryService.getCategoriesByType(CategoryType.EXPENSE);
+        List<CategoryResponse> responses =
+                categoryService.getCategoriesByType(CategoryType.EXPENSE);
 
         assertNotNull(responses);
         assertEquals(1, responses.size());

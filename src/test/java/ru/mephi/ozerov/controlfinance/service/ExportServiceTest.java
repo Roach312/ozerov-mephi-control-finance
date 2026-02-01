@@ -1,5 +1,12 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,62 +20,56 @@ import ru.mephi.ozerov.controlfinance.entity.CategoryType;
 import ru.mephi.ozerov.controlfinance.entity.TransactionType;
 import ru.mephi.ozerov.controlfinance.service.impl.ExportServiceImpl;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class ExportServiceTest {
 
-    @Mock
-    private StatisticsService statisticsService;
+    @Mock private StatisticsService statisticsService;
 
-    @Mock
-    private TransactionService transactionService;
+    @Mock private TransactionService transactionService;
 
-    @InjectMocks
-    private ExportServiceImpl exportService;
+    @InjectMocks private ExportServiceImpl exportService;
 
     @Test
     void exportSummaryAsText_ShouldReturnFormattedText() {
-        SummaryResponse summary = SummaryResponse.builder()
-                .totalIncome(new BigDecimal("2000.00"))
-                .totalExpense(new BigDecimal("1000.00"))
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        SummaryResponse summary =
+                SummaryResponse.builder()
+                        .totalIncome(new BigDecimal("2000.00"))
+                        .totalExpense(new BigDecimal("1000.00"))
+                        .balance(new BigDecimal("1000.00"))
+                        .build();
 
-        CategorySummaryResponse categorySummary = CategorySummaryResponse.builder()
-                .categoryId(1L)
-                .categoryName("Food")
-                .categoryType(CategoryType.EXPENSE)
-                .totalAmount(new BigDecimal("500.00"))
-                .build();
+        CategorySummaryResponse categorySummary =
+                CategorySummaryResponse.builder()
+                        .categoryId(1L)
+                        .categoryName("Food")
+                        .categoryType(CategoryType.EXPENSE)
+                        .totalAmount(new BigDecimal("500.00"))
+                        .build();
 
-        BudgetStatusResponse budgetStatus = BudgetStatusResponse.builder()
-                .categoryId(1L)
-                .categoryName("Food")
-                .limitAmount(new BigDecimal("600.00"))
-                .spentAmount(new BigDecimal("500.00"))
-                .remainingAmount(new BigDecimal("100.00"))
-                .limitExceeded(false)
-                .build();
+        BudgetStatusResponse budgetStatus =
+                BudgetStatusResponse.builder()
+                        .categoryId(1L)
+                        .categoryName("Food")
+                        .limitAmount(new BigDecimal("600.00"))
+                        .spentAmount(new BigDecimal("500.00"))
+                        .remainingAmount(new BigDecimal("100.00"))
+                        .limitExceeded(false)
+                        .build();
 
-        TransactionResponse transaction = TransactionResponse.builder()
-                .id(1L)
-                .amount(new BigDecimal("100.00"))
-                .type(TransactionType.EXPENSE)
-                .categoryId(1L)
-                .categoryName("Food")
-                .description("Lunch")
-                .createdAt(LocalDateTime.now())
-                .build();
+        TransactionResponse transaction =
+                TransactionResponse.builder()
+                        .id(1L)
+                        .amount(new BigDecimal("100.00"))
+                        .type(TransactionType.EXPENSE)
+                        .categoryId(1L)
+                        .categoryName("Food")
+                        .description("Lunch")
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         when(statisticsService.getSummary()).thenReturn(summary);
-        when(statisticsService.getSummaryByCategories(isNull())).thenReturn(List.of(categorySummary));
+        when(statisticsService.getSummaryByCategories(isNull()))
+                .thenReturn(List.of(categorySummary));
         when(statisticsService.getBudgetStatus()).thenReturn(List.of(budgetStatus));
         when(transactionService.getAllTransactions()).thenReturn(List.of(transaction));
 
@@ -86,11 +87,12 @@ class ExportServiceTest {
 
     @Test
     void exportSummaryAsJson_ShouldReturnValidJson() {
-        SummaryResponse summary = SummaryResponse.builder()
-                .totalIncome(new BigDecimal("2000.00"))
-                .totalExpense(new BigDecimal("1000.00"))
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        SummaryResponse summary =
+                SummaryResponse.builder()
+                        .totalIncome(new BigDecimal("2000.00"))
+                        .totalExpense(new BigDecimal("1000.00"))
+                        .balance(new BigDecimal("1000.00"))
+                        .build();
 
         when(statisticsService.getSummary()).thenReturn(summary);
         when(statisticsService.getSummaryByCategories(isNull())).thenReturn(List.of());

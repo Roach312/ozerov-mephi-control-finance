@@ -5,13 +5,12 @@ import ru.mephi.ozerov.controlfinance.dto.auth.LoginRequest;
 import ru.mephi.ozerov.controlfinance.dto.auth.RegisterRequest;
 import ru.mephi.ozerov.controlfinance.entity.User;
 
-/**
- * Интерфейс сервиса для операций с пользователями.
- */
+/** Интерфейс сервиса для операций с пользователями. */
 public interface UserService {
 
     /**
      * Регистрация нового пользователя.
+     *
      * @param request данные регистрации
      * @return ответ аутентификации
      */
@@ -19,6 +18,7 @@ public interface UserService {
 
     /**
      * Аутентификация пользователя.
+     *
      * @param request данные для входа
      * @return ответ аутентификации
      */
@@ -26,6 +26,7 @@ public interface UserService {
 
     /**
      * Получить пользователя по логину.
+     *
      * @param login логин пользователя
      * @return сущность пользователя
      */
@@ -33,6 +34,7 @@ public interface UserService {
 
     /**
      * Получить текущего аутентифицированного пользователя.
+     *
      * @return сущность текущего пользователя
      */
     User getCurrentUser();

@@ -1,5 +1,9 @@
 package ru.mephi.ozerov.controlfinance.service.impl;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +19,7 @@ import ru.mephi.ozerov.controlfinance.service.StatisticsService;
 import ru.mephi.ozerov.controlfinance.service.UserService;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Реализация сервиса статистики.
- */
+/** Реализация сервиса статистики. */
 @Service
 @RequiredArgsConstructor
 public class StatisticsServiceImpl implements StatisticsService {
@@ -38,8 +35,10 @@ public class StatisticsServiceImpl implements StatisticsService {
     public SummaryResponse getSummary() {
         Wallet wallet = walletService.getCurrentUserWalletEntity();
 
-        BigDecimal totalIncome = transactionRepository.sumByWalletIdAndType(wallet.getId(), TransactionType.INCOME);
-        BigDecimal totalExpense = transactionRepository.sumByWalletIdAndType(wallet.getId(), TransactionType.EXPENSE);
+        BigDecimal totalIncome =
+                transactionRepository.sumByWalletIdAndType(wallet.getId(), TransactionType.INCOME);
+        BigDecimal totalExpense =
+                transactionRepository.sumByWalletIdAndType(wallet.getId(), TransactionType.EXPENSE);
 
         return SummaryResponse.builder()
                 .totalIncome(totalIncome)
@@ -60,23 +59,30 @@ public class StatisticsServiceImpl implements StatisticsService {
         } else {
             categories = new ArrayList<>();
             for (Long categoryId : categoryIds) {
-                Category category = categoryRepository.findByIdAndUser(categoryId, user)
-                        .orElseThrow(() -> new EntityNotFoundException("Category not found: " + categoryId));
+                Category category =
+                        categoryRepository
+                                .findByIdAndUser(categoryId, user)
+                                .orElseThrow(
+                                        () ->
+                                                new EntityNotFoundException(
+                                                        "Category not found: " + categoryId));
                 categories.add(category);
             }
         }
 
         return categories.stream()
-                .map(category -> {
-                    BigDecimal totalAmount = transactionRepository.sumByWalletIdAndCategoryId(
-                            wallet.getId(), category.getId());
-                    return CategorySummaryResponse.builder()
-                            .categoryId(category.getId())
-                            .categoryName(category.getName())
-                            .categoryType(category.getType())
-                            .totalAmount(totalAmount)
-                            .build();
-                })
+                .map(
+                        category -> {
+                            BigDecimal totalAmount =
+                                    transactionRepository.sumByWalletIdAndCategoryId(
+                                            wallet.getId(), category.getId());
+                            return CategorySummaryResponse.builder()
+                                    .categoryId(category.getId())
+                                    .categoryName(category.getName())
+                                    .categoryType(category.getType())
+                                    .totalAmount(totalAmount)
+                                    .build();
+                        })
                 .collect(Collectors.toList());
     }
 
@@ -87,21 +93,24 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<Budget> budgets = budgetRepository.findByWallet(wallet);
 
         return budgets.stream()
-                .map(budget -> {
-                    BigDecimal spentAmount = transactionRepository.sumByWalletIdAndCategoryId(
-                            wallet.getId(), budget.getCategory().getId());
-                    BigDecimal remainingAmount = budget.getLimitAmount().subtract(spentAmount);
-                    boolean limitExceeded = remainingAmount.compareTo(BigDecimal.ZERO) < 0;
+                .map(
+                        budget -> {
+                            BigDecimal spentAmount =
+                                    transactionRepository.sumByWalletIdAndCategoryId(
+                                            wallet.getId(), budget.getCategory().getId());
+                            BigDecimal remainingAmount =
+                                    budget.getLimitAmount().subtract(spentAmount);
+                            boolean limitExceeded = remainingAmount.compareTo(BigDecimal.ZERO) < 0;
 
-                    return BudgetStatusResponse.builder()
-                            .categoryId(budget.getCategory().getId())
-                            .categoryName(budget.getCategory().getName())
-                            .limitAmount(budget.getLimitAmount())
-                            .spentAmount(spentAmount)
-                            .remainingAmount(remainingAmount)
-                            .limitExceeded(limitExceeded)
-                            .build();
-                })
+                            return BudgetStatusResponse.builder()
+                                    .categoryId(budget.getCategory().getId())
+                                    .categoryName(budget.getCategory().getName())
+                                    .limitAmount(budget.getLimitAmount())
+                                    .spentAmount(spentAmount)
+                                    .remainingAmount(remainingAmount)
+                                    .limitExceeded(limitExceeded)
+                                    .build();
+                        })
                 .collect(Collectors.toList());
     }
 }

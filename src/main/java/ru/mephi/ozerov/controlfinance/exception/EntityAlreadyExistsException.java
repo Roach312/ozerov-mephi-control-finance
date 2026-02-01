@@ -1,8 +1,6 @@
 package ru.mephi.ozerov.controlfinance.exception;
 
-/**
- * Исключение, выбрасываемое при попытке создать сущность, которая уже существует.
- */
+/** Исключение, выбрасываемое при попытке создать сущность, которая уже существует. */
 public class EntityAlreadyExistsException extends RuntimeException {
 
     public EntityAlreadyExistsException(String message) {

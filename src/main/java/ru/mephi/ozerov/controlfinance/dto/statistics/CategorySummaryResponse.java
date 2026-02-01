@@ -1,16 +1,13 @@
 package ru.mephi.ozerov.controlfinance.dto.statistics;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.mephi.ozerov.controlfinance.entity.CategoryType;
 
-import java.math.BigDecimal;
-
-/**
- * DTO for category summary response.
- */
+/** DTO for category summary response. */
 @Data
 @Builder
 @NoArgsConstructor

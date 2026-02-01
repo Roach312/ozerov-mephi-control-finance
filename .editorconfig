@@ -1,0 +1,55 @@
+# EditorConfig - https://editorconfig.org
+
+# Корневой файл конфигурации
+root = true
+
+# Общие настройки для всех файлов
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Java файлы
+[*.java]
+indent_size = 4
+max_line_length = 120
+
+# XML файлы (pom.xml и др.)
+[*.xml]
+indent_size = 4
+
+# YAML файлы
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON файлы
+[*.json]
+indent_size = 2
+
+# Properties файлы
+[*.properties]
+indent_size = 4
+
+# Markdown файлы
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Shell скрипты
+[*.sh]
+indent_size = 2
+
+# Windows batch файлы
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Makefile
+[Makefile]
+indent_style = tab
+
+# GitHub Actions
+[.github/**/*.yml]
+indent_size = 2

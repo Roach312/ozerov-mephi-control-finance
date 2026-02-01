@@ -1,5 +1,10 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,40 +18,23 @@ import ru.mephi.ozerov.controlfinance.exception.EntityNotFoundException;
 import ru.mephi.ozerov.controlfinance.repository.WalletRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.WalletServiceImpl;
 
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class WalletServiceTest {
 
-    @Mock
-    private WalletRepository walletRepository;
+    @Mock private WalletRepository walletRepository;
 
-    @Mock
-    private UserService userService;
+    @Mock private UserService userService;
 
-    @InjectMocks
-    private WalletServiceImpl walletService;
+    @InjectMocks private WalletServiceImpl walletService;
 
     private User user;
     private Wallet wallet;
 
     @BeforeEach
     void setUp() {
-        user = User.builder()
-                .id(1L)
-                .login("testuser")
-                .passwordHash("hash")
-                .build();
+        user = User.builder().id(1L).login("testuser").passwordHash("hash").build();
 
-        wallet = Wallet.builder()
-                .id(1L)
-                .user(user)
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        wallet = Wallet.builder().id(1L).user(user).balance(new BigDecimal("1000.00")).build();
     }
 
     @Test
@@ -97,6 +85,8 @@ class WalletServiceTest {
         when(userService.getUserByLogin("testuser")).thenReturn(user);
         when(walletRepository.findByUser(user)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> walletService.getWalletByUserLogin("testuser"));
+        assertThrows(
+                EntityNotFoundException.class,
+                () -> walletService.getWalletByUserLogin("testuser"));
     }
 }

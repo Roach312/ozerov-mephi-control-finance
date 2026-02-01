@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mephi.ozerov.controlfinance.service.ExportService;
 
-/**
- * Контроллер для операций экспорта.
- */
+/** Контроллер для операций экспорта. */
 @RestController
 @RequestMapping("/api/export")
 @RequiredArgsConstructor
@@ -22,11 +20,13 @@ public class ExportController {
 
     /**
      * Экспортировать финансовую сводку.
+     *
      * @param format формат вывода (text или json, по умолчанию json)
      * @return экспортированные данные
      */
     @GetMapping("/summary")
-    public ResponseEntity<String> exportSummary(@RequestParam(defaultValue = "json") String format) {
+    public ResponseEntity<String> exportSummary(
+            @RequestParam(defaultValue = "json") String format) {
         String content;
         MediaType mediaType;
         String filename;
@@ -42,7 +42,9 @@ public class ExportController {
         }
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
                 .contentType(mediaType)
                 .body(content);
     }

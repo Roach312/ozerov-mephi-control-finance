@@ -11,9 +11,7 @@ import ru.mephi.ozerov.controlfinance.repository.WalletRepository;
 import ru.mephi.ozerov.controlfinance.service.UserService;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-/**
- * Реализация сервиса кошельков.
- */
+/** Реализация сервиса кошельков. */
 @Service
 @RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
@@ -36,15 +34,21 @@ public class WalletServiceImpl implements WalletService {
     @Transactional(readOnly = true)
     public Wallet getCurrentUserWalletEntity() {
         User user = userService.getCurrentUser();
-        return walletRepository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException("Wallet not found for user: " + user.getLogin()));
+        return walletRepository
+                .findByUser(user)
+                .orElseThrow(
+                        () ->
+                                new EntityNotFoundException(
+                                        "Wallet not found for user: " + user.getLogin()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public Wallet getWalletByUserLogin(String login) {
         User user = userService.getUserByLogin(login);
-        return walletRepository.findByUser(user)
-                .orElseThrow(() -> new EntityNotFoundException("Wallet not found for user: " + login));
+        return walletRepository
+                .findByUser(user)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Wallet not found for user: " + login));
     }
 }

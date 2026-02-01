@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mephi.ozerov.controlfinance.dto.wallet.WalletResponse;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-/**
- * Контроллер для операций с кошельком.
- */
+/** Контроллер для операций с кошельком. */
 @RestController
 @RequestMapping("/api/wallet")
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ public class WalletController {
 
     /**
      * Получить кошелёк текущего пользователя.
+     *
      * @return ответ кошелька
      */
     @GetMapping

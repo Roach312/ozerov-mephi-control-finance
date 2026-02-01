@@ -1,5 +1,8 @@
 package ru.mephi.ozerov.controlfinance.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,13 +18,7 @@ import ru.mephi.ozerov.controlfinance.service.BudgetService;
 import ru.mephi.ozerov.controlfinance.service.CategoryService;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-/**
- * Реализация сервиса бюджетов.
- */
+/** Реализация сервиса бюджетов. */
 @Service
 @RequiredArgsConstructor
 public class BudgetServiceImpl implements BudgetService {
@@ -41,18 +38,20 @@ public class BudgetServiceImpl implements BudgetService {
             throw new ValidationException("Budget can only be set for expense categories");
         }
 
-        Optional<Budget> existingBudget = budgetRepository.findByWalletAndCategory(wallet, category);
+        Optional<Budget> existingBudget =
+                budgetRepository.findByWalletAndCategory(wallet, category);
 
         Budget budget;
         if (existingBudget.isPresent()) {
             budget = existingBudget.get();
             budget.setLimitAmount(request.getLimitAmount());
         } else {
-            budget = Budget.builder()
-                    .wallet(wallet)
-                    .category(category)
-                    .limitAmount(request.getLimitAmount())
-                    .build();
+            budget =
+                    Budget.builder()
+                            .wallet(wallet)
+                            .category(category)
+                            .limitAmount(request.getLimitAmount())
+                            .build();
         }
 
         budget = budgetRepository.save(budget);
@@ -75,7 +74,8 @@ public class BudgetServiceImpl implements BudgetService {
         Wallet wallet = walletService.getCurrentUserWalletEntity();
         Category category = categoryService.getCategoryById(categoryId);
 
-        return budgetRepository.findByWalletAndCategory(wallet, category)
+        return budgetRepository
+                .findByWalletAndCategory(wallet, category)
                 .map(this::mapToResponse)
                 .orElse(null);
     }

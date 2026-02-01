@@ -1,16 +1,13 @@
 package ru.mephi.ozerov.controlfinance.dto.transfer;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-/**
- * DTO for transfer response.
- */
+/** DTO for transfer response. */
 @Data
 @Builder
 @NoArgsConstructor

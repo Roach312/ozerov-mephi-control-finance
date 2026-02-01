@@ -1,5 +1,8 @@
 package ru.mephi.ozerov.controlfinance.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,14 +20,7 @@ import ru.mephi.ozerov.controlfinance.service.TransferService;
 import ru.mephi.ozerov.controlfinance.service.UserService;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Реализация сервиса переводов.
- */
+/** Реализация сервиса переводов. */
 @Service
 @RequiredArgsConstructor
 public class TransferServiceImpl implements TransferService {
@@ -54,37 +50,40 @@ public class TransferServiceImpl implements TransferService {
         }
 
         // Создаём перевод
-        Transfer transfer = Transfer.builder()
-                .fromWallet(fromWallet)
-                .toWallet(toWallet)
-                .amount(request.getAmount())
-                .createdAt(LocalDateTime.now())
-                .fromUserLogin(currentUserLogin)
-                .toUserLogin(request.getToUserLogin())
-                .build();
+        Transfer transfer =
+                Transfer.builder()
+                        .fromWallet(fromWallet)
+                        .toWallet(toWallet)
+                        .amount(request.getAmount())
+                        .createdAt(LocalDateTime.now())
+                        .fromUserLogin(currentUserLogin)
+                        .toUserLogin(request.getToUserLogin())
+                        .build();
 
         transfer = transferRepository.save(transfer);
 
         // Создаём транзакцию расхода для отправителя
-        Transaction expenseTransaction = Transaction.builder()
-                .wallet(fromWallet)
-                .amount(request.getAmount())
-                .type(TransactionType.EXPENSE)
-                .description("Transfer to " + request.getToUserLogin())
-                .createdAt(LocalDateTime.now())
-                .transfer(transfer)
-                .build();
+        Transaction expenseTransaction =
+                Transaction.builder()
+                        .wallet(fromWallet)
+                        .amount(request.getAmount())
+                        .type(TransactionType.EXPENSE)
+                        .description("Transfer to " + request.getToUserLogin())
+                        .createdAt(LocalDateTime.now())
+                        .transfer(transfer)
+                        .build();
         transactionRepository.save(expenseTransaction);
 
         // Создаём транзакцию дохода для получателя
-        Transaction incomeTransaction = Transaction.builder()
-                .wallet(toWallet)
-                .amount(request.getAmount())
-                .type(TransactionType.INCOME)
-                .description("Transfer from " + currentUserLogin)
-                .createdAt(LocalDateTime.now())
-                .transfer(transfer)
-                .build();
+        Transaction incomeTransaction =
+                Transaction.builder()
+                        .wallet(toWallet)
+                        .amount(request.getAmount())
+                        .type(TransactionType.INCOME)
+                        .description("Transfer from " + currentUserLogin)
+                        .createdAt(LocalDateTime.now())
+                        .transfer(transfer)
+                        .build();
         transactionRepository.save(incomeTransaction);
 
         // Обновляем балансы
@@ -100,7 +99,9 @@ public class TransferServiceImpl implements TransferService {
     @Transactional(readOnly = true)
     public List<TransferResponse> getAllTransfers() {
         Wallet wallet = walletService.getCurrentUserWalletEntity();
-        return transferRepository.findByFromWalletOrToWalletOrderByCreatedAtDesc(wallet, wallet).stream()
+        return transferRepository
+                .findByFromWalletOrToWalletOrderByCreatedAtDesc(wallet, wallet)
+                .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }

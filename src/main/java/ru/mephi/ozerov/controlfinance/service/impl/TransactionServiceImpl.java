@@ -1,5 +1,8 @@
 package ru.mephi.ozerov.controlfinance.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,14 +16,7 @@ import ru.mephi.ozerov.controlfinance.service.CategoryService;
 import ru.mephi.ozerov.controlfinance.service.TransactionService;
 import ru.mephi.ozerov.controlfinance.service.WalletService;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-/**
- * Реализация сервиса транзакций.
- */
+/** Реализация сервиса транзакций. */
 @Service
 @RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
@@ -37,21 +33,24 @@ public class TransactionServiceImpl implements TransactionService {
         Category category = categoryService.getCategoryById(request.getCategoryId());
 
         // Проверяем соответствие типа категории типу транзакции
-        if (request.getType() == TransactionType.INCOME && category.getType() != CategoryType.INCOME) {
+        if (request.getType() == TransactionType.INCOME
+                && category.getType() != CategoryType.INCOME) {
             throw new ValidationException("Income transactions require an income category");
         }
-        if (request.getType() == TransactionType.EXPENSE && category.getType() != CategoryType.EXPENSE) {
+        if (request.getType() == TransactionType.EXPENSE
+                && category.getType() != CategoryType.EXPENSE) {
             throw new ValidationException("Expense transactions require an expense category");
         }
 
-        Transaction transaction = Transaction.builder()
-                .wallet(wallet)
-                .amount(request.getAmount())
-                .type(request.getType())
-                .category(category)
-                .description(request.getDescription())
-                .createdAt(LocalDateTime.now())
-                .build();
+        Transaction transaction =
+                Transaction.builder()
+                        .wallet(wallet)
+                        .amount(request.getAmount())
+                        .type(request.getType())
+                        .category(category)
+                        .description(request.getDescription())
+                        .createdAt(LocalDateTime.now())
+                        .build();
 
         transaction = transactionRepository.save(transaction);
 
@@ -99,11 +98,20 @@ public class TransactionServiceImpl implements TransactionService {
                 .id(transaction.getId())
                 .amount(transaction.getAmount())
                 .type(transaction.getType())
-                .categoryId(transaction.getCategory() != null ? transaction.getCategory().getId() : null)
-                .categoryName(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
+                .categoryId(
+                        transaction.getCategory() != null
+                                ? transaction.getCategory().getId()
+                                : null)
+                .categoryName(
+                        transaction.getCategory() != null
+                                ? transaction.getCategory().getName()
+                                : null)
                 .description(transaction.getDescription())
                 .createdAt(transaction.getCreatedAt())
-                .transferId(transaction.getTransfer() != null ? transaction.getTransfer().getId() : null)
+                .transferId(
+                        transaction.getTransfer() != null
+                                ? transaction.getTransfer().getId()
+                                : null)
                 .build();
     }
 }

@@ -1,20 +1,19 @@
 package ru.mephi.ozerov.controlfinance.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.*;
 
 /**
- * Сущность, представляющая кошелёк пользователя.
- * Каждый пользователь имеет ровно один кошелёк, который отслеживает баланс и все финансовые транзакции.
+ * Сущность, представляющая кошелёк пользователя. Каждый пользователь имеет ровно один кошелёк,
+ * который отслеживает баланс и все финансовые транзакции.
  */
 @Entity
-@Table(name = "wallets", indexes = {
-        @Index(name = "idx_wallet_user", columnList = "user_id")
-})
+@Table(
+        name = "wallets",
+        indexes = {@Index(name = "idx_wallet_user", columnList = "user_id")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -34,11 +33,19 @@ public class Wallet {
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "wallet",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     @Builder.Default
     private List<Transaction> transactions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "wallet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "wallet",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     @Builder.Default
     private List<Budget> budgets = new ArrayList<>();
 }

@@ -1,8 +1,6 @@
 package ru.mephi.ozerov.controlfinance.exception;
 
-/**
- * Исключение, выбрасываемое при ошибке валидации.
- */
+/** Исключение, выбрасываемое при ошибке валидации. */
 public class ValidationException extends RuntimeException {
 
     public ValidationException(String message) {

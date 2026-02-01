@@ -1,5 +1,12 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,34 +24,20 @@ import ru.mephi.ozerov.controlfinance.repository.TransferRepository;
 import ru.mephi.ozerov.controlfinance.repository.WalletRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.TransferServiceImpl;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class TransferServiceTest {
 
-    @Mock
-    private TransferRepository transferRepository;
+    @Mock private TransferRepository transferRepository;
 
-    @Mock
-    private TransactionRepository transactionRepository;
+    @Mock private TransactionRepository transactionRepository;
 
-    @Mock
-    private WalletRepository walletRepository;
+    @Mock private WalletRepository walletRepository;
 
-    @Mock
-    private WalletService walletService;
+    @Mock private WalletService walletService;
 
-    @Mock
-    private UserService userService;
+    @Mock private UserService userService;
 
-    @InjectMocks
-    private TransferServiceImpl transferService;
+    @InjectMocks private TransferServiceImpl transferService;
 
     private User fromUser;
     private User toUser;
@@ -57,35 +50,30 @@ class TransferServiceTest {
         fromUser = User.builder().id(1L).login("sender").build();
         toUser = User.builder().id(2L).login("receiver").build();
 
-        fromWallet = Wallet.builder()
-                .id(1L)
-                .user(fromUser)
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        fromWallet =
+                Wallet.builder().id(1L).user(fromUser).balance(new BigDecimal("1000.00")).build();
 
-        toWallet = Wallet.builder()
-                .id(2L)
-                .user(toUser)
-                .balance(new BigDecimal("500.00"))
-                .build();
+        toWallet = Wallet.builder().id(2L).user(toUser).balance(new BigDecimal("500.00")).build();
 
-        transfer = Transfer.builder()
-                .id(1L)
-                .fromWallet(fromWallet)
-                .toWallet(toWallet)
-                .amount(new BigDecimal("200.00"))
-                .createdAt(LocalDateTime.now())
-                .fromUserLogin("sender")
-                .toUserLogin("receiver")
-                .build();
+        transfer =
+                Transfer.builder()
+                        .id(1L)
+                        .fromWallet(fromWallet)
+                        .toWallet(toWallet)
+                        .amount(new BigDecimal("200.00"))
+                        .createdAt(LocalDateTime.now())
+                        .fromUserLogin("sender")
+                        .toUserLogin("receiver")
+                        .build();
     }
 
     @Test
     void createTransfer_ShouldCreateTransfer() {
-        TransferRequest request = TransferRequest.builder()
-                .toUserLogin("receiver")
-                .amount(new BigDecimal("200.00"))
-                .build();
+        TransferRequest request =
+                TransferRequest.builder()
+                        .toUserLogin("receiver")
+                        .amount(new BigDecimal("200.00"))
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(fromWallet);
         when(userService.getCurrentUser()).thenReturn(fromUser);
@@ -111,10 +99,11 @@ class TransferServiceTest {
 
     @Test
     void createTransfer_ShouldThrowExceptionWhenTransferToSelf() {
-        TransferRequest request = TransferRequest.builder()
-                .toUserLogin("sender")
-                .amount(new BigDecimal("200.00"))
-                .build();
+        TransferRequest request =
+                TransferRequest.builder()
+                        .toUserLogin("sender")
+                        .amount(new BigDecimal("200.00"))
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(fromWallet);
         when(userService.getCurrentUser()).thenReturn(fromUser);
@@ -125,10 +114,11 @@ class TransferServiceTest {
 
     @Test
     void createTransfer_ShouldThrowExceptionWhenInsufficientBalance() {
-        TransferRequest request = TransferRequest.builder()
-                .toUserLogin("receiver")
-                .amount(new BigDecimal("2000.00"))
-                .build();
+        TransferRequest request =
+                TransferRequest.builder()
+                        .toUserLogin("receiver")
+                        .amount(new BigDecimal("2000.00"))
+                        .build();
 
         when(walletService.getCurrentUserWalletEntity()).thenReturn(fromWallet);
         when(userService.getCurrentUser()).thenReturn(fromUser);
@@ -141,7 +131,8 @@ class TransferServiceTest {
     @Test
     void getAllTransfers_ShouldReturnAllTransfers() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(fromWallet);
-        when(transferRepository.findByFromWalletOrToWalletOrderByCreatedAtDesc(fromWallet, fromWallet))
+        when(transferRepository.findByFromWalletOrToWalletOrderByCreatedAtDesc(
+                        fromWallet, fromWallet))
                 .thenReturn(List.of(transfer));
 
         List<TransferResponse> responses = transferService.getAllTransfers();
@@ -153,7 +144,8 @@ class TransferServiceTest {
     @Test
     void getSentTransfers_ShouldReturnSentTransfers() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(fromWallet);
-        when(transferRepository.findByFromWalletOrderByCreatedAtDesc(fromWallet)).thenReturn(List.of(transfer));
+        when(transferRepository.findByFromWalletOrderByCreatedAtDesc(fromWallet))
+                .thenReturn(List.of(transfer));
 
         List<TransferResponse> responses = transferService.getSentTransfers();
 
@@ -164,7 +156,8 @@ class TransferServiceTest {
     @Test
     void getReceivedTransfers_ShouldReturnReceivedTransfers() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(toWallet);
-        when(transferRepository.findByToWalletOrderByCreatedAtDesc(toWallet)).thenReturn(List.of(transfer));
+        when(transferRepository.findByToWalletOrderByCreatedAtDesc(toWallet))
+                .thenReturn(List.of(transfer));
 
         List<TransferResponse> responses = transferService.getReceivedTransfers();
 

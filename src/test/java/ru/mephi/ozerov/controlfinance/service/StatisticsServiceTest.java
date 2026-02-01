@@ -1,5 +1,11 @@
 package ru.mephi.ozerov.controlfinance.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,33 +22,20 @@ import ru.mephi.ozerov.controlfinance.repository.CategoryRepository;
 import ru.mephi.ozerov.controlfinance.repository.TransactionRepository;
 import ru.mephi.ozerov.controlfinance.service.impl.StatisticsServiceImpl;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class StatisticsServiceTest {
 
-    @Mock
-    private TransactionRepository transactionRepository;
+    @Mock private TransactionRepository transactionRepository;
 
-    @Mock
-    private BudgetRepository budgetRepository;
+    @Mock private BudgetRepository budgetRepository;
 
-    @Mock
-    private CategoryRepository categoryRepository;
+    @Mock private CategoryRepository categoryRepository;
 
-    @Mock
-    private WalletService walletService;
+    @Mock private WalletService walletService;
 
-    @Mock
-    private UserService userService;
+    @Mock private UserService userService;
 
-    @InjectMocks
-    private StatisticsServiceImpl statisticsService;
+    @InjectMocks private StatisticsServiceImpl statisticsService;
 
     private User user;
     private Wallet wallet;
@@ -53,25 +46,23 @@ class StatisticsServiceTest {
     void setUp() {
         user = User.builder().id(1L).login("testuser").build();
 
-        wallet = Wallet.builder()
-                .id(1L)
-                .user(user)
-                .balance(new BigDecimal("1000.00"))
-                .build();
+        wallet = Wallet.builder().id(1L).user(user).balance(new BigDecimal("1000.00")).build();
 
-        expenseCategory = Category.builder()
-                .id(1L)
-                .user(user)
-                .name("Food")
-                .type(CategoryType.EXPENSE)
-                .build();
+        expenseCategory =
+                Category.builder()
+                        .id(1L)
+                        .user(user)
+                        .name("Food")
+                        .type(CategoryType.EXPENSE)
+                        .build();
 
-        budget = Budget.builder()
-                .id(1L)
-                .wallet(wallet)
-                .category(expenseCategory)
-                .limitAmount(new BigDecimal("500.00"))
-                .build();
+        budget =
+                Budget.builder()
+                        .id(1L)
+                        .wallet(wallet)
+                        .category(expenseCategory)
+                        .limitAmount(new BigDecimal("500.00"))
+                        .build();
     }
 
     @Test
@@ -95,7 +86,8 @@ class StatisticsServiceTest {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(userService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.findByUser(user)).thenReturn(List.of(expenseCategory));
-        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L)).thenReturn(new BigDecimal("300.00"));
+        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L))
+                .thenReturn(new BigDecimal("300.00"));
 
         List<CategorySummaryResponse> responses = statisticsService.getSummaryByCategories(null);
 
@@ -110,9 +102,11 @@ class StatisticsServiceTest {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(userService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.findByIdAndUser(1L, user)).thenReturn(Optional.of(expenseCategory));
-        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L)).thenReturn(new BigDecimal("300.00"));
+        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L))
+                .thenReturn(new BigDecimal("300.00"));
 
-        List<CategorySummaryResponse> responses = statisticsService.getSummaryByCategories(List.of(1L));
+        List<CategorySummaryResponse> responses =
+                statisticsService.getSummaryByCategories(List.of(1L));
 
         assertNotNull(responses);
         assertEquals(1, responses.size());
@@ -124,7 +118,8 @@ class StatisticsServiceTest {
         when(userService.getCurrentUser()).thenReturn(user);
         when(categoryRepository.findByIdAndUser(99L, user)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, 
+        assertThrows(
+                EntityNotFoundException.class,
                 () -> statisticsService.getSummaryByCategories(List.of(99L)));
     }
 
@@ -132,7 +127,8 @@ class StatisticsServiceTest {
     void getBudgetStatus_ShouldReturnBudgetStatuses() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(budgetRepository.findByWallet(wallet)).thenReturn(List.of(budget));
-        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L)).thenReturn(new BigDecimal("300.00"));
+        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L))
+                .thenReturn(new BigDecimal("300.00"));
 
         List<BudgetStatusResponse> responses = statisticsService.getBudgetStatus();
 
@@ -149,7 +145,8 @@ class StatisticsServiceTest {
     void getBudgetStatus_ShouldShowLimitExceeded() {
         when(walletService.getCurrentUserWalletEntity()).thenReturn(wallet);
         when(budgetRepository.findByWallet(wallet)).thenReturn(List.of(budget));
-        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L)).thenReturn(new BigDecimal("600.00"));
+        when(transactionRepository.sumByWalletIdAndCategoryId(1L, 1L))
+                .thenReturn(new BigDecimal("600.00"));
 
         List<BudgetStatusResponse> responses = statisticsService.getBudgetStatus();
 

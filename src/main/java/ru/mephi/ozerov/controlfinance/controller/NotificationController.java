@@ -1,5 +1,6 @@
 package ru.mephi.ozerov.controlfinance.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,11 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.mephi.ozerov.controlfinance.dto.notification.NotificationResponse;
 import ru.mephi.ozerov.controlfinance.service.NotificationService;
 
-import java.util.List;
-
-/**
- * Контроллер для операций с уведомлениями.
- */
+/** Контроллер для операций с уведомлениями. */
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
@@ -22,6 +19,7 @@ public class NotificationController {
 
     /**
      * Получить все уведомления/оповещения для текущего пользователя.
+     *
      * @return список ответов уведомлений
      */
     @GetMapping

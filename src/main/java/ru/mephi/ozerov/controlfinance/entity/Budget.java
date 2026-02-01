@@ -1,23 +1,24 @@
 package ru.mephi.ozerov.controlfinance.entity;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 /**
- * Сущность, представляющая лимит бюджета для конкретной категории расходов.
- * Каждый бюджет привязан к кошельку и категории с уникальным ограничением для предотвращения дублирования.
+ * Сущность, представляющая лимит бюджета для конкретной категории расходов. Каждый бюджет привязан
+ * к кошельку и категории с уникальным ограничением для предотвращения дублирования.
  */
 @Entity
-@Table(name = "budgets",
+@Table(
+        name = "budgets",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_budget_wallet_category", 
-                        columnNames = {"wallet_id", "category_id"})
+            @UniqueConstraint(
+                    name = "uk_budget_wallet_category",
+                    columnNames = {"wallet_id", "category_id"})
         },
         indexes = {
-                @Index(name = "idx_budget_wallet", columnList = "wallet_id"),
-                @Index(name = "idx_budget_category", columnList = "category_id")
+            @Index(name = "idx_budget_wallet", columnList = "wallet_id"),
+            @Index(name = "idx_budget_category", columnList = "category_id")
         })
 @Getter
 @Setter

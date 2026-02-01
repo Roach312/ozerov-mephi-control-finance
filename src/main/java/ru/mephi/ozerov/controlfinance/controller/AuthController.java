@@ -10,9 +10,7 @@ import ru.mephi.ozerov.controlfinance.dto.auth.LoginRequest;
 import ru.mephi.ozerov.controlfinance.dto.auth.RegisterRequest;
 import ru.mephi.ozerov.controlfinance.service.UserService;
 
-/**
- * Контроллер для операций аутентификации.
- */
+/** Контроллер для операций аутентификации. */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -22,6 +20,7 @@ public class AuthController {
 
     /**
      * Регистрация нового пользователя.
+     *
      * @param request данные регистрации
      * @return ответ аутентификации
      */
@@ -33,6 +32,7 @@ public class AuthController {
 
     /**
      * Аутентификация пользователя.
+     *
      * @param request данные для входа
      * @return ответ аутентификации
      */

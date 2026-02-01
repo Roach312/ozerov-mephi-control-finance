@@ -1,8 +1,6 @@
 package ru.mephi.ozerov.controlfinance.exception;
 
-/**
- * Исключение, выбрасываемое когда запрошенная сущность не найдена.
- */
+/** Исключение, выбрасываемое когда запрошенная сущность не найдена. */
 public class EntityNotFoundException extends RuntimeException {
 
     public EntityNotFoundException(String message) {
