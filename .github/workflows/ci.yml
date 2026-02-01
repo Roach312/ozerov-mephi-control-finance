@@ -46,10 +46,10 @@ jobs:
         id: coverage
         run: |
           # Извлекаем процент покрытия из CSV отчёта
+          # Формат JaCoCo CSV: GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,...
           if [ -f target/site/jacoco/jacoco.csv ]; then
-            # Суммируем покрытые и пропущенные инструкции
-            COVERED=$(awk -F',' 'NR>1 {sum+=$4} END {print sum}' target/site/jacoco/jacoco.csv)
-            MISSED=$(awk -F',' 'NR>1 {sum+=$5} END {print sum}' target/site/jacoco/jacoco.csv)
+            MISSED=$(awk -F',' 'NR>1 {sum+=$4} END {print sum}' target/site/jacoco/jacoco.csv)
+            COVERED=$(awk -F',' 'NR>1 {sum+=$5} END {print sum}' target/site/jacoco/jacoco.csv)
             TOTAL=$((COVERED + MISSED))
             if [ $TOTAL -gt 0 ]; then
               PERCENT=$((COVERED * 100 / TOTAL))
