@@ -226,3 +226,99 @@ curl -u user1:password123 http://localhost:8080/api/wallet
   ]
 }
 ```
+
+## Анализ безопасности (SBOM)
+
+Проект поддерживает генерацию SBOM (Software Bill of Materials) и анализ уязвимостей зависимостей.
+
+### Генерация SBOM
+
+SBOM генерируется с помощью CycloneDX Maven Plugin в формате JSON:
+
+```bash
+./mvnw cyclonedx:makeAggregateBom
+```
+
+Результат: `target/sbom.json`
+
+### Структура SBOM файла
+
+Файл содержит:
+- Метаданные проекта (название, версия, описание)
+- Список всех зависимостей с информацией:
+  - groupId, artifactId, version
+  - purl (Package URL) — унифицированный идентификатор пакета
+  - scope (compile, runtime, test, provided)
+  - хеши (MD5, SHA-1, SHA-256, SHA-512)
+  - информация о лицензиях
+
+### OWASP Dependency Check
+
+Сканирование зависимостей на известные уязвимости (CVE):
+
+```bash
+# Требуется NVD API ключ для доступа к базе уязвимостей
+export NVD_API_KEY=your-api-key
+./mvnw dependency-check:check
+```
+
+Результат: `target/dependency-check/dependency-check-report.html`
+
+Получить NVD API ключ: https://nvd.nist.gov/developers/request-an-api-key
+
+### Dependency Track
+
+Для загрузки SBOM в Dependency Track используется API:
+
+```bash
+curl -X POST "https://your-dtrack-server/api/v1/bom" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -H "Content-Type: multipart/form-data" \
+  -F "project=PROJECT_UUID" \
+  -F "bom=@target/sbom.json"
+```
+
+### Сравнение инструментов
+
+| Критерий | Dependency Check | Dependency Track |
+|----------|------------------|------------------|
+| Тип | CLI / Maven плагин | Веб-платформа |
+| База данных | NVD (локальная копия) | NVD, GitHub Advisories, OSS Index |
+| Отчёт | HTML, JSON, XML | Веб-интерфейс, API |
+| Отслеживание | Разовый анализ | История изменений во времени |
+| Интеграция | CI/CD скрипты | REST API, CI/CD |
+| Уведомления | Нет | Email, Webhook, Slack |
+| Лицензии | Не анализирует | Анализ лицензий |
+
+Рекомендуется использовать оба инструмента:
+- Dependency Check — быстрая проверка в CI pipeline
+- Dependency Track — централизованный мониторинг всех проектов
+
+## GitHub Actions CI/CD
+
+Pipeline для автоматизации анализа безопасности находится в `.github/workflows/ci.yml`.
+
+Триггер: создание или обновление pull request.
+
+Джобы безопасности (запускаются только для PR):
+- `generate-sbom` — генерация SBOM файла (CycloneDX)
+- `dependency-check` — сканирование OWASP Dependency Check
+
+Необходимые секреты в GitHub Settings → Secrets and variables → Actions:
+- `NVD_API_KEY` — ключ для NVD API
+
+### Локальный запуск Dependency Track (опционально)
+
+```bash
+# Запуск через Docker
+docker run -d -p 8081:8080 --name dependency-track dependencytrack/bundled
+
+# Открыть: http://localhost:8081
+# Логин: admin / admin
+
+# Загрузить SBOM вручную через UI или API:
+curl -X POST "http://localhost:8081/api/v1/bom" \
+  -H "X-Api-Key: YOUR_API_KEY" \
+  -F "project=PROJECT_UUID" \
+  -F "bom=@target/sbom.json"
+```

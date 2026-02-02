@@ -10,6 +10,67 @@ env:
   JAVA_VERSION: '17'
 
 jobs:
+  # Стадия build - генерация SBOM
+  generate-sbom:
+    name: Генерация SBOM
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: Настройка JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Установка прав на выполнение mvnw
+        run: chmod +x ./mvnw
+
+      - name: Генерация SBOM (CycloneDX)
+        run: ./mvnw cyclonedx:makeAggregateBom -DskipTests -q
+
+      - name: Загрузка SBOM артефакта
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: target/sbom.json
+          retention-days: 7
+
+  # Стадия security - OWASP Dependency Check
+  dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout репозитория
+        uses: actions/checkout@v4
+
+      - name: Настройка JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Установка прав на выполнение mvnw
+        run: chmod +x ./mvnw
+
+      - name: Запуск Dependency Check
+        run: ./mvnw dependency-check:check -DskipTests -DnvdApiKey="${{ secrets.NVD_API_KEY }}" -q
+        continue-on-error: true
+
+      - name: Загрузка отчёта Dependency Check
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: target/dependency-check/
+          retention-days: 7
+
   build:
     name: Сборка и тесты
     runs-on: ubuntu-latest
